@@ -28,7 +28,15 @@ def sine(frequency, seconds, sampling_rate):
     return numpy.sin(cycles_per_sample * values)
 
 def triangle(frequency, seconds, sampling_rate):
-    """A triangle wave."""
+    """A triangle wave.
+
+    Args:
+        frequency: the frequency of the wave.
+        seconds: the length of the wave in seconds.
+        sampling_rate: the sampling rate of audio I/O. Defaults to
+            44.1 kHz.
+
+    """
     # The length of the array to generate.
     length = int(seconds * sampling_rate)
 
@@ -47,23 +55,32 @@ def triangle(frequency, seconds, sampling_rate):
 
 
 def square(frequency, seconds, sampling_rate):
-    """A square wave."""
+    """A square wave.
+
+    Args:
+        frequency: the frequency of the wave.
+        seconds: the length of the wave in seconds.
+        sampling_rate: the sampling rate of audio I/O. Defaults to
+            44.1 kHz.
+
+    """
     # The length of the array to generate.
     length = int(seconds * sampling_rate)
 
     # The period of the square wave.
-    # Why is frequency multiplied by 2?
-    period = sampling_rate / float(2 * frequency)
+    period = sampling_rate / float(frequency)
     values = numpy.arange(length)
     def squaregen(period, length, amplitude):
         x = 0
         y = -amplitude
+        half_period = round(float(period) / 2)
         while x < length:
-            if x % period == 0:
+            # An acceptable epsilon value. Flip signs every half period.
+            if x % half_period <= 0.5:
                 y *= -1
             yield y 
             x += 1
-    values = numpy.fromiter(squaregen(int(period), length, 0.5), "d")
+    values = numpy.fromiter(squaregen(period, length, 0.5), "d")
     return values
 
 
